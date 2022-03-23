@@ -1,0 +1,5 @@
+logger:
+  version: v1
+  logpath: /logs
+  zipdays: 30
+  normaldays: 7
