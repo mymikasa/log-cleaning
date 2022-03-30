@@ -128,7 +128,7 @@ func (h *handler) Runner(zipdays, normaldays int) error {
 				return errors.WithStack(err)
 			}
 		}
-	default:
+	case ".log", ".txt", ".out":
 		if ntime-mtime > int64(normaldays*24*60*60) {
 			if err := h.gzipFile(); err != nil {
 				return errors.WithStack(err)
@@ -137,6 +137,8 @@ func (h *handler) Runner(zipdays, normaldays int) error {
 				return errors.WithStack(err)
 			}
 		}
+	default:
+		fmt.Println("Unexpect suffix")
 	}
 	return nil
 }
