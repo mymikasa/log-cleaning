@@ -1,6 +1,4 @@
-package handler
-
-type Option func(*FileInfos)
+package clean
 
 type FileInfos struct {
 	ModificationTime int64
@@ -11,6 +9,8 @@ type FileInfos struct {
 	Name             string
 	Suffix           string
 }
+
+type Option func(*FileInfos)
 
 func WithVisitTime(time int64) Option {
 	return func(f *FileInfos) {
@@ -52,12 +52,4 @@ func WithSuffix(s string) Option {
 	return func(f *FileInfos) {
 		f.Suffix = s
 	}
-}
-
-func New(option ...Option) *FileInfos {
-	o := &FileInfos{}
-	for _, opt := range option {
-		opt(o)
-	}
-	return o
 }

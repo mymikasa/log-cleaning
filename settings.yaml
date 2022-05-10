@@ -1,5 +1,5 @@
 logger:
   version: v1
-  logpath: /Users/mikasa/repo/log-cleaning/test
-  zipdays: 21
-  normaldays: 7 
+  logpath: /logs/mikasa/
+  zipdays: 1
+  normaldays: 4

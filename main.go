@@ -1,13 +1,16 @@
 package main
 
 import (
-	"cleaning/internal/handler"
+	"cleaning/internal/clean"
+	"cleaning/pkg/file"
 	"cleaning/pkg/logging"
 	"flag"
 	"fmt"
 	"os"
 	"path"
+	"time"
 
+	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
 )
 
@@ -23,6 +26,33 @@ type Settings struct {
 }
 
 var config = new(Settings)
+
+func Cron() {
+	c := cron.New()
+	_, err := c.AddFunc("*/1 * * * *", func() {
+		filepath := config.Logger.LogPath
+		filenames, err := file.GetAllFileName(filepath)
+
+		if err != nil {
+			logging.Panic(err)
+		}
+
+		for _, fpath := range filenames {
+			name := path.Base(fpath)
+			h, err := clean.NewFileHandler(name, fpath)
+			if err != nil {
+				logging.Panic(err)
+			}
+			h.Clean(config.Logger.Zipdays, config.Logger.Normaldays)
+		}
+	})
+
+	if err != nil {
+		return
+	}
+	c.Start()
+	time.Sleep(time.Minute * 5)
+}
 
 func main() {
 
@@ -42,19 +72,5 @@ func main() {
 	if err := viper.Unmarshal(config); err != nil {
 		panic(exitCode{1})
 	}
-	filepath := config.Logger.LogPath
-	filenames, err := handler.GetAllFileName(filepath)
-
-	if err != nil {
-		logging.Panic(err)
-	}
-
-	for _, fpath := range filenames {
-		name := path.Base(fpath)
-		h, err := handler.NewFileHandler(name, fpath)
-		if err != nil {
-			logging.Panic(err)
-		}
-		h.Runner(config.Logger.Zipdays, config.Logger.Normaldays)
-	}
+	Cron()
 }
