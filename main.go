@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"time"
 
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
@@ -29,7 +28,7 @@ var config = new(Settings)
 
 func Cron() {
 	c := cron.New()
-	_, err := c.AddFunc("*/1 * * * *", func() {
+	_, err := c.AddFunc("20 11 * * *", func() {
 		filepath := config.Logger.LogPath
 		filenames, err := file.GetAllFileName(filepath)
 
@@ -51,7 +50,7 @@ func Cron() {
 		return
 	}
 	c.Start()
-	time.Sleep(time.Minute * 5)
+	select {}
 }
 
 func main() {
