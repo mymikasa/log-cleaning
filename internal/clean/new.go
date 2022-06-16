@@ -21,9 +21,10 @@ func NewFileHandler(filename, filepath string) (Handler, error) {
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
+	modTime := filestat.ModTime()
 	stat := filestat.Sys().(*syscall.Stat_t)
 
-	modificationTime := int64(stat.Mtimespec.Sec)
+	modificationTime := modTime.Unix()
 	createtime := int64(stat.Ctimespec.Sec)
 	visitTime := int64(stat.Atimespec.Sec)
 	suffix := path.Ext(filename)

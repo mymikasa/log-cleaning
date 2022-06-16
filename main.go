@@ -28,29 +28,31 @@ var config = new(Settings)
 
 func Cron() {
 	c := cron.New()
-	_, err := c.AddFunc("20 11 * * *", func() {
-		filepath := config.Logger.LogPath
-		filenames, err := file.GetAllFileName(filepath)
-
-		if err != nil {
-			logging.Panic(err)
-		}
-
-		for _, fpath := range filenames {
-			name := path.Base(fpath)
-			h, err := clean.NewFileHandler(name, fpath)
-			if err != nil {
-				logging.Panic(err)
-			}
-			h.Clean(config.Logger.Zipdays, config.Logger.Normaldays)
-		}
-	})
+	_, err := c.AddFunc("20 11 * * *", run)
 
 	if err != nil {
 		return
 	}
 	c.Start()
 	select {}
+}
+
+func run() {
+	filepath := config.Logger.LogPath
+	filenames, err := file.GetAllFileName(filepath)
+
+	if err != nil {
+		logging.Panic(err)
+	}
+
+	for _, fpath := range filenames {
+		name := path.Base(fpath)
+		h, err := clean.NewFileHandler(name, fpath)
+		if err != nil {
+			logging.Panic(err)
+		}
+		h.Clean(config.Logger.Zipdays, config.Logger.Normaldays)
+	}
 }
 
 func main() {
@@ -66,7 +68,10 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Failed reading configuration:", err.Error())
 		panic(exitCode{1})
 	}
+	// logging.MustSetup(constant.IsDebug)
+	m := logging.WithIsDebug(false)
 
+	logging.MustSetup(m)
 	viper.WatchConfig()
 	if err := viper.Unmarshal(config); err != nil {
 		panic(exitCode{1})

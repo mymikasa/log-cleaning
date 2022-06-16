@@ -40,8 +40,8 @@ func (h *handler) removeFile() error {
 		if err != nil {
 			return errors.WithStack(err)
 		}
+		logging.Info("cleaning", "remove", h.fileInfos.Name)
 	}
-	logging.Info("cleaning", "remove", h.fileInfos.Name)
 	return nil
 }
 
