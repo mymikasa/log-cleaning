@@ -25,8 +25,8 @@ func NewFileHandler(filename, filepath string) (Handler, error) {
 	stat := filestat.Sys().(*syscall.Stat_t)
 
 	modificationTime := modTime.Unix()
-	createtime := int64(stat.Ctimespec.Sec)
-	visitTime := int64(stat.Atimespec.Sec)
+	createtime := int64(stat.Ctim.Sec)
+	visitTime := int64(stat.Atim.Sec)
 	suffix := path.Ext(filename)
 
 	f := New(
